@@ -70,10 +70,3 @@ Primary corpus comes from a publicly available dataset on Hugging Face, which co
    - Modify `DRIVE_BASE` path in the Configuration cell to your Drive folder
    - Run all cells sequentially
 
-## Key Results
-
-- **Documents:** 87,733 Reddit posts after filtering
-- **Topics Discovered:** 21 coherent topics
-- **Coherence Score:** Cᵥ = 0.54
-- **Noise Cluster:** 61,048 documents (69.6%)
-- **Time Range:** July 2019 – December 2021
