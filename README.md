@@ -1,100 +1,79 @@
-# SI699: Mental Health Topic Modeling & Risk Detection
+# Topic Modeling on Reddit Mental Health Posts
 
-This repository contains pipelines for analyzing mental health discussions on Reddit using topic modeling (BERTopic) and risk classification.
-
-## Project Structure
-
-```
-├── data_processing.ipynb          # Data cleaning and preprocessing
-├── topic_modeling_colab.ipynb     # BERTopic topic modeling pipeline
-├── data/                          # Data files (tracked via Git LFS)
-│   ├── reddit_mental_health_posts.csv
-│   ├── processed_corpus.csv
-│   ├── corpus_with_topics.csv
-│   └── ...
-├── outputs/
-│   ├── figures/                   # Generated visualizations
-│   ├── models/                    # Trained models
-│   └── results/                   # Evaluation metrics and results
-└── README.md
-```
-
-## Requirements
-
-```bash
-pip install bertopic sentence-transformers umap-learn hdbscan transformers torch
-pip install datasets huggingface_hub scikit-learn pandas matplotlib seaborn gensim joblib
-```
-
-## How to Run
-
-### 1. Data Processing
-
-Run `data_processing.ipynb` to:
-- Load Reddit mental health corpus from Hugging Face
-- Clean text (remove URLs, HTML, whitespace)
-- Filter deleted/removed and short posts
-- Generate stratified sample for annotation
-- Apply rule-based pre-annotation (Zirikly-style)
-
-```python
-# Output files:
-# - data/processed_corpus.csv (87,733 cleaned posts)
-# - data/sample_for_annotation.csv (1,200 posts for labeling)
-# - data/annotated_subset.csv (with risk_level 0-3)
-```
-
-### 2. Topic Modeling
-
-Run `topic_modeling_colab.ipynb` (designed for Google Colab) to:
-- Compute MentalBERT embeddings
-- Run BERTopic clustering
-- Generate topic visualizations
-- Evaluate model coherence and stability
-
-**For Google Colab:**
-1. Upload notebook to Colab
-2. Mount Google Drive
-3. Modify `DRIVE_BASE` path in Configuration cell
-4. Run all cells
-
-**Configuration:**
-```python
-# Modify these paths for your environment
-DRIVE_BASE = Path("/content/drive/MyDrive/your_folder")
-```
-
-```python
-# Output files:
-# - data/corpus_with_topics.csv
-# - outputs/results/bertopic_topic_info.csv
-# - outputs/results/topic_modeling_metrics.csv
-# - outputs/figures/*.png
-```
-
-## Key Results
-
-- **Documents:** 87,733 Reddit posts from 5 subreddits (ADHD, Aspergers, Depression, OCD, PTSD)
-- **Topics:** 21 coherent topics discovered
-- **Coherence:** Cᵥ = 0.54 (acceptable for social media text)
-- **Time Range:** July 2019 – December 2021
+This part of the project involves data preprocessing, topic modeling using BERTopic with MentalBERT embeddings, quantitative evaluation (coherence, stability), and temporal analysis of mental health discussions on Reddit.
 
 ## Data Source
 
-Reddit Mental Health Posts dataset from Hugging Face:
-```python
-from datasets import load_dataset
-dataset = load_dataset('solomonk/reddit_mental_health_posts')
+Primary corpus comes from a publicly available dataset on Hugging Face, which contains approximately 151,000 Reddit posts from five mental health subreddits: depression, PTSD, OCD, ADHD, and Aspergers.
+
+## Project Structure
+
+```text
+├── data/                                               Data files (tracked via Git LFS)
+│   ├── reddit_mental_health_posts.csv                  Raw data from Hugging Face
+│   ├── processed_corpus.csv                            Cleaned corpus (87,733 posts)
+│   ├── corpus_with_topics.csv                          Corpus with topic assignments
+│   ├── labeled_with_topics.csv                         Labeled data with topics
+│   ├── sample_for_annotation.csv                       Stratified sample for annotation
+│   └── annotated_subset.csv                            Rule-based pre-annotated data
+│
+├── outputs/
+│   ├── figures/                                        Generated visualizations
+│   │   ├── topic_distribution.png
+│   │   ├── topic_prevalence_over_time.png
+│   │   ├── topic_similarity.png
+│   │   ├── topic_trends.png
+│   │   ├── topic_words_heatmap.png
+│   │   └── topics_per_subreddit.png
+│   │
+│   ├── models/                                         Trained models
+│   │   ├── roberta_risk_model/
+│   │   └── sbert_risk_model/
+│   │
+│   └── results/                                        Evaluation metrics and results
+│       ├── bertopic_topic_info.csv
+│       ├── topic_modeling_metrics.csv
+│       ├── topic_prevalence_over_time.csv
+│       ├── topic_stability_results.csv
+│       └── topics_for_integration.csv
+│
+├── .gitattributes
+├── .gitignore
+├── data_processing.ipynb                               Data cleaning and preprocessing
+├── topic_modeling_colab.ipynb                          BERTopic topic modeling pipeline
+├── README.md
+└── requirements.txt
 ```
 
-## Git LFS
+## Running Code
 
-Large files (CSV, model weights) are tracked via Git LFS:
-```bash
-git lfs install
-git lfs pull
-```
+1. Download the data from this repository by either using `git clone https://github.com/Social-Media-Help-Seeking-ML/yinjasim.git` for HTTPS or using `git clone git@github.com:Social-Media-Help-Seeking-ML/yinjasim.git` for SSH. It can also be downloaded manually by clicking on **Code >> Download Zip**.
 
-## License
+2. Install Git LFS and pull large files:
+   ```bash
+   git lfs install
+   git lfs pull
+   ```
 
-For academic use only.
+3. Create a virtual environment and activate it.
+
+4. Install necessary packages listed on the `requirements.txt` into the virtual environment:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. Run `data_processing.ipynb` for data loading, cleaning, filtering, and stratified sampling for annotation.
+
+6. Run `topic_modeling_colab.ipynb` for topic modeling pipeline. **Note:** This notebook is designed for Google Colab. To run on Colab:
+   - Upload the notebook to Google Colab
+   - Mount your Google Drive
+   - Modify `DRIVE_BASE` path in the Configuration cell to your Drive folder
+   - Run all cells sequentially
+
+## Key Results
+
+- **Documents:** 87,733 Reddit posts after filtering
+- **Topics Discovered:** 21 coherent topics
+- **Coherence Score:** Cᵥ = 0.54
+- **Noise Cluster:** 61,048 documents (69.6%)
+- **Time Range:** July 2019 – December 2021
